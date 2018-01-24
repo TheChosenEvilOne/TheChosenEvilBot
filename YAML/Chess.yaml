@@ -1,0 +1,258 @@
+info:
+    name: Chess game pak
+    load:
+        commands:
+        variables:
+
+data:
+    commands:
+        showboard:
+            run: >
+                try:
+                    self.bot.send("PRIVMSG "+channel+" :chess test")
+                    board = self.bot.data["variables"]["chess"]["games"]["defaultchan"]["board"]
+                    boardstr = " "
+                    for x in board.keys():
+                        for y in board[x]:
+                            boardstr.join(str(y))
+                            print(x+str(y))
+                        boardstr.join("\n")
+                    print(boardstr)
+                except Exception as e:
+                    print(e)
+            description: chess test command
+            syntax: ''
+            category: general
+
+    variables:
+        chess:
+            rules:
+                moves:
+                    t:
+                        capture: linear
+                        movement: linear
+                    h:
+                        capture: linear
+                        movement: linear
+                    b:
+                        capture: linear
+                        movement: linear
+                    k:
+                        capture: linear
+                        movement: linear
+                    q:
+                        capture: linear
+                        movement: linear
+                    p:
+                        capture: linear
+                        movement: linear
+            games:
+                defaultchan:
+                    players:
+                        white:
+                            name: default white player host
+                        black:
+                            name: default black player host 
+                    board:
+                        a:
+                            1: !!seq
+                               - '#'
+                               - 'wt'
+                            2: !!seq
+                               - '+'
+                               - 'wh'
+                            3: !!seq
+                               - '#'
+                               - 'b'
+                            4: !!seq
+                               - '+'
+                               - 'wk'
+                            5: !!seq
+                               - '#'
+                               - 'wq'
+                            6: !!seq
+                               - '+'
+                               - 'wb'
+                            7: !!seq
+                               - '#'
+                               - 'wh'
+                            8: !!seq
+                               - '+'
+                               - 'wt'
+                        b:
+                            1: !!seq
+                               - '+'
+                               - 'wp'
+                            2: !!seq
+                               - '#'
+                               - 'wp'
+                            3: !!seq
+                               - '+'
+                               - 'wp'
+                            4: !!seq
+                               - '#'
+                               - 'wp'
+                            5: !!seq
+                               - '+'
+                               - 'wp'
+                            6: !!seq
+                               - '#'
+                               - 'wp'
+                            7: !!seq
+                               - '+'
+                               - 'wp'
+                            8: !!seq
+                               - '#'
+                               - 'wp'
+                        c:
+                            1: !!seq
+                               - '#'
+                               - ''
+                            2: !!seq
+                               - '+'
+                               - ''
+                            3: !!seq
+                               - '#'
+                               - ''
+                            4: !!seq
+                               - '+'
+                               - ''
+                            5: !!seq
+                               - '#'
+                               - ''
+                            6: !!seq
+                               - '+'
+                               - ''
+                            7: !!seq
+                               - '#'
+                               - ''
+                            8: !!seq
+                               - '+'
+                               - ''
+                        d:
+                            1: !!seq
+                               - '+'
+                               - ''
+                            2: !!seq
+                               - '#'
+                               - ''
+                            3: !!seq
+                               - '+'
+                               - ''
+                            4: !!seq
+                               - '#'
+                               - ''
+                            5: !!seq
+                               - '+'
+                               - ''
+                            6: !!seq
+                               - '#'
+                               - ''
+                            7: !!seq
+                               - '+'
+                               - ''
+                            8: !!seq
+                               - '#'
+                               - ''
+                        e:
+                            1: !!seq
+                               - '#'
+                               - ''
+                            2: !!seq
+                               - '+'
+                               - ''
+                            3: !!seq
+                               - '#'
+                               - ''
+                            4: !!seq
+                               - '+'
+                               - ''
+                            5: !!seq
+                               - '#'
+                               - ''
+                            6: !!seq
+                               - '+'
+                               - ''
+                            7: !!seq
+                               - '#'
+                               - ''
+                            8: !!seq
+                               - '+'
+                               - ''
+                        f:
+                            1: !!seq
+                               - '+'
+                               - ''
+                            2: !!seq
+                               - '#'
+                               - ''
+                            3: !!seq
+                               - '+'
+                               - ''
+                            4: !!seq
+                               - '#'
+                               - ''
+                            5: !!seq
+                               - '+'
+                               - ''
+                            6: !!seq
+                               - '#'
+                               - ''
+                            7: !!seq
+                               - '+'
+                               - ''
+                            8: !!seq
+                               - '#'
+                               - ''
+                        g:
+                            1: !!seq
+                               - '#'
+                               - 'bp'
+                            2: !!seq
+                               - '+'
+                               - 'bp'
+                            3: !!seq
+                               - '#'
+                               - 'bp'
+                            4: !!seq
+                               - '+'
+                               - 'bp'
+                            5: !!seq
+                               - '#'
+                               - 'bp'
+                            6: !!seq
+                               - '+'
+                               - 'bp'
+                            7: !!seq
+                               - '#'
+                               - 'bp'
+                            8: !!seq
+                               - '+'
+                               - 'bp'
+                        h:
+                            1: !!seq
+                               - '+'
+                               - 'bt'
+                            2: !!seq
+                               - '#'
+                               - 'bh'
+                            3: !!seq
+                               - '+'
+                               - 'bb'
+                            4: !!seq
+                               - '#'
+                               - 'bk'
+                            5: !!seq
+                               - '+'
+                               - 'bq'
+                            6: !!seq
+                               - '#'
+                               - 'bb'
+                            7: !!seq
+                               - '+'
+                               - 'bh'
+                            8: !!seq
+                               - '#'
+                               - 'bt'
+                        
+                    

@@ -1,0 +1,22 @@
+info:
+    name: "Template pack"
+    load: !!seq
+        - "commands"
+        - "variables"
+data:
+    commands:
+        example:
+            run: >
+                self.bot.send("PRIVMSG "+channel+" :foobar baz quz")
+                print(args)
+                print(user)
+            permission: 3735928559 #get it? 0xDEADBEEF in decimal
+            description: foobar baz qux
+            syntax: <required argument> [optional]
+            category: test_category
+    variables:
+        userdata:
+            foo/bar:
+                permission: 3735928559
+        categories: !!seq
+            - "test_category"

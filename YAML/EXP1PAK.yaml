@@ -1,0 +1,12 @@
+info:
+    name: "EXP1PAK"
+    load: !!seq
+        - "commands"
+data:
+    commands:
+        test:
+            run: self.bot.send("PRIVMSG "+channel+" :expansion test")
+            permission: 0
+            description: test command
+            category: misc
+                    

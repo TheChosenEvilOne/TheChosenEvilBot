@@ -1,0 +1,11 @@
+variables:
+    channels: !!seq
+        - "##TheChosenEvilOne"
+        - "##lazy-valoran"
+    server: irc.freenode.net
+    nickname: TheChosenEvilBot
+    prefix: "<<"
+    password: ""
+    realname: "bot"
+    autoload: !!seq
+        - "YAML/Base.yaml"

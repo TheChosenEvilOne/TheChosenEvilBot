@@ -1,0 +1,117 @@
+info:
+    name: Base YCP
+    load: !!seq
+        - "commands"
+        - "variables"
+
+data:
+    commands:
+        load:
+            run: >
+                try:
+                    status = self.bot.loadyaml(args.split()[0])
+                    if(status == 1): self.bot.send("PRIVMSG "+channel+" :File "+args.split()[0]+" not found")
+                    if(status == 2): self.bot.send("PRIVMSG "+channel+" :Error")
+                    if(status == 0):
+                        self.bot.send("PRIVMSG "+channel+" :"+args.split()[0])
+                        self.bot.send("PRIVMSG "+channel+" :"+self.bot.yaml.info["name"]+" loaded")
+                except Exception as e:
+                    print(e)
+                    self.bot.send("PRIVMSG "+channel+" :YAML file failed to load")
+            permission: 50
+            description: Loads defined yaml file (file that contains the commands)
+            syntax: <file location>
+            category: admin
+        say:
+            run: self.bot.send("PRIVMSG "+channel+" :"+args)
+            permission: 10
+            description: Basically echo
+            syntax: <text>
+            category: general
+        setperm:
+            run: >
+                    try:
+                        self.bot.data["variables"]["userdata"][args.split()[0]]["permission"] = int(args.split()[1])
+                        self.bot.send("PRIVMSG "+channel+" :ok")
+                    except Exception as e:
+                        self.bot.send("PRIVMSG "+channel+" :error "+str(e))
+            permission: 100
+            description: Sets permission
+            syntax: <user host> <permission level>
+            category: admin
+        help:
+            run: >
+              try:
+                import time
+                if(args != ""):
+                    if(args.split()[0] in self.bot.data["variables"]["categories"]):
+                        com = []
+                        for x in self.bot.data["commands"].keys():
+                            if(args.split()[0] == self.bot.data["commands"][x]["category"]):
+                                com.append(x)
+                        self.bot.send("PRIVMSG "+channel+" :Commands in category '" + args.split()[0]+"':")
+                        self.bot.send("PRIVMSG "+channel+" :"+" ".join(com))
+                    elif(args.split()[0] in self.bot.data["commands"]): 
+                        self.bot.send("PRIVMSG "+channel+" :Information about command '"+args.split()[0]+"':")
+                        if("syntax" in self.bot.data["commands"][args.split()[0]].keys()):
+                            if(self.bot.data["commands"][args.split()[0]]["syntax"] != None):
+                                self.bot.send("PRIVMSG "+channel+" :Syntax: "+str(self.bot.data["commands"][args.split()[0]]["syntax"]))
+                            else:
+                                self.bot.send("PRIVMSG "+channel+" :Syntax: Not defined")
+                        else:
+                            self.bot.send("PRIVMSG "+channel+" :Syntax: Not defined")
+                        if("description" in self.bot.data["commands"][args.split()[0]].keys()):
+                            if(self.bot.data["commands"][args.split()[0]]["description"] != None):
+                                self.bot.send("PRIVMSG "+channel+" :Description: "+str(self.bot.data["commands"][args.split()[0]]["description"]))
+                            else:
+                                self.bot.send("PRIVMSG "+channel+" :Description: Not defined")
+                        else:
+                            self.bot.send("PRIVMSG "+channel+" :Description: Not defined")    
+                    elif( not args.split()[0] in self.bot.data["commands"]): 
+                        self.bot.send("PRIVMSG "+channel+" :No such a command or category: '"+args.split()[0]+"'")
+                else:        
+                    self.bot.send("PRIVMSG "+channel+" :Categories:")
+                    self.bot.send("PRIVMSG "+channel+" :"+" ".join(self.bot.data["variables"]["categories"]))
+              except Exception as e:
+                print(str(e))
+            description: Help command
+            syntax: '[category/command]'
+            category: general
+        eval:
+            run: >
+                try:
+                    self.bot.send("PRIVMSG "+channel+" :"+str(eval(args)))
+                except Exception as e:
+                    self.bot.send("PRIVMSG "+channel+" :"+str(e))
+            permission: 100
+            description: Evaluate command
+            syntax: '<string to evaluate>'
+            category: admin
+        kill:
+            run: >
+                try:
+                    import sys
+                    sys.exit()
+                except Exception as e:
+                    print(e)
+            permission: 100
+            description: kill the bot
+            category: admin
+        kick:
+            run: >
+                self.bot.send("KICK "+args.split()[0])
+            permission: 50
+            description: kick
+            category: admin
+            
+    variables:
+        userdata:
+            unaffiliated/tceo:
+                permission: 100
+            unaffiliated/gustavo6046: 
+                permission: 90
+            c.handicraftsman.tk: 
+                permission: 90
+        categories: !!seq
+            - "admin"
+            - "general"
