@@ -169,16 +169,35 @@ data:
             category: owner
         about:
             run: >
-                self.bot.sendPrivmsg(nickn,"to be written")
+                self.bot.sendNotice(nickn,"to be written")
             permission: general.about
             description: info about the bot
             category: general
         whois:
             run: >
-                self.bot.sendNotice(nickn,"NYI")
+                try:
+                    self.bot.sendNotice(nickn,"NYI")
+                    if args == "":
+                        localusr = hostn
+                    else:
+                        localusr = args.split()[0]
+                    if localusr in self.bot.data["userdata"].keys():
+                        if "permissions" in self.bot.data["userdata"][localusr].keys():
+                            perms = ", "
+                            perms = perms.join(self.bot.data["userdata"][localusr]["permissions"])
+                            self.bot.sendPrivmsg(channel,"User "+localusr+" has perms:")
+                            self.bot.sendPrivmsg(channel,perms)
+                except Exception as e:
+                    print(e)
             permission: general.whois
             description: who is [user]
-            syntax: <hostname:str>
+            syntax: "[hostname:str]"
+            category: general
+        list:
+            run: >
+                self.bot.sendNotice(nickn,"use \"help\" command")
+            permission: general.list
+            description: use help command
             category: general
     userdata:
         unaffiliated/tceo:

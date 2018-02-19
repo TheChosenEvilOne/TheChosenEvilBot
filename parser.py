@@ -26,6 +26,8 @@ class CommandHandler:
 			self.bot.send("NOTICE "+nickn+" :Unknown command: "+command)
 			return False
 		hostn = user[user.find("@")+1:].strip()
+		if not hostn in self.bot.data["userdata"].keys():
+		    self.bot.data["userdata"][hostn] = {}
 		usern = user[user.find("@")+1:].strip()
 		perm = False	
 		syntax = True
@@ -53,6 +55,8 @@ class CommandHandler:
 		else:
 			self.bot.send("PRIVMSG "+channel+" :This command does not have 'run' node, it cannot be executed.")
 	def permCheck(self, userHost, cmdPerm):
+		if not "permissions" in self.bot.data["userdata"][userHost]:
+			self.bot.data["userdata"][userHost]["permissions"] = []
 		for perm in self.bot.data["userdata"][userHost]["permissions"]:
 			if "-" in perm:
 				perm = perm.replace("-","")

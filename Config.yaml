@@ -4,7 +4,7 @@ secrets:
 variables:
     channels: !!seq
         - "##TheChosenEvilOne"
-        - "#powder-bots"
+        - "##lazy-valoran"
     server: irc.freenode.net
     nickname: TheChosenEvilBot
     prefix: "<<"
