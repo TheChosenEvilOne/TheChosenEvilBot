@@ -27,7 +27,7 @@ class Bot:
         self.server = self.config.variables["server"]
         self.botnick = self.config.variables["nickname"]
         self.prefix = self.config.variables["prefix"]
-        password = self.config.variables["password"]
+        password = self.config.secrets["password"]
         self.realname = self.config.variables["realname"]
         
         for d in self.config.variables["autoload"]:
@@ -35,7 +35,7 @@ class Bot:
             self.loadyaml(d)
             print(str(self.data))
             
-        self.config = self.Struct()        
+        self.config.secrets = {}        
 
         self.log = positron.Logger()
         #self.log.enable_file_logging()
@@ -53,11 +53,17 @@ class Bot:
         for channel in self.channels:
             self.send("JOIN "+ channel)
     def send(self,msg):
-        self.log.io("[W] " + msg)
+        self.log.io("[RAW] " + msg)
         self.irc.send((msg + '\r\n').encode("utf-8"))
+    def sendPrivmsg(self,reciever,msg):
+        self.log.io("[PRIVMSG] " + msg)
+        self.irc.send(("PRIVMSG "+reciever+" :"+ msg + '\r\n').encode("utf-8"))
+    def sendNotice(self,nick,msg):
+        self.log.io("[NOTICE] "+nick+ ": " + msg)
+        self.irc.send(("NOTICE "+nick+" :"+ msg + '\r\n').encode("utf-8"))
     def recv(self):
         msg = self.irc.makefile().readline()[0:-1]
-        self.log.io("[R] " + msg)
+        self.log.io("[READ] " + msg)
         return msg
     class Struct:
         def __init__(self, **entries): 

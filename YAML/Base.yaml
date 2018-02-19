@@ -1,5 +1,5 @@
 info:
-    name: Base YCP
+    name: Base
     load: !!seq
         - "commands"
         - "variables"
@@ -13,38 +13,68 @@ data:
                     if(status == 1): self.bot.send("PRIVMSG "+channel+" :File "+args.split()[0]+" not found")
                     if(status == 2): self.bot.send("PRIVMSG "+channel+" :Error")
                     if(status == 0):
-                        self.bot.send("PRIVMSG "+channel+" :"+args.split()[0])
-                        self.bot.send("PRIVMSG "+channel+" :"+self.bot.yaml.info["name"]+" loaded")
+                        self.bot.send("PRIVMSG "+channel+" :"+args.split()[0]+":"+self.bot.yaml.info["name"]+" loaded")
                 except Exception as e:
                     print(e)
                     self.bot.send("PRIVMSG "+channel+" :YAML file failed to load")
-            permission: 50
+            permission: admin.load
             description: Loads defined yaml file (file that contains the commands)
-            syntax: <file location>
+            syntax: <file_location:str>
             category: admin
         say:
-            run: self.bot.send("PRIVMSG "+channel+" :"+args)
-            permission: 10
-            description: Basically echo
-            syntax: <text>
+            run: self.bot.send("PRIVMSG "+channel+" :"+" "+args)
+            permission: general.echo
+            description: just echo
+            syntax: <text:str>...
             category: general
-        setperm:
+        perm:
             run: >
                     try:
-                        self.bot.data["variables"]["userdata"][args.split()[0]]["permission"] = int(args.split()[1])
-                        self.bot.send("PRIVMSG "+channel+" :ok")
+                        if args != "":
+                            argsx = args.split()
+                            if len(argsx) == 3:                                    
+                                if not self.permCheck(hostn,args[2]):
+                                    self.bot.sendNotice(nickn,"You do not have required permissions to grant permission node: "+argsx[2])
+                                if (argsx[1] == "grant"):
+                                    if not argsx[2] in self.bot.data["userdata"][argsx[0]]["permissions"]:
+                                        self.bot.data["userdata"][argsx[0]]["permissions"].insert(0,argsx[2])
+                                        self.bot.sendNotice(nickn,"added permission node: "+argsx[2]+" to user: "+argsx[0])
+                                    else:
+                                        self.bot.sendNotice(nickn,"user "+argsx[0]+" already has permission node: "+argsx[2])
+                                elif (argsx[1] == "deny"):
+                                    if not "-"+argsx[2] in self.bot.data["userdata"][argsx[0]]["permissions"]:
+                                        self.bot.data["userdata"][argsx[0]]["permissions"].insert(0,"-"+argsx[2])
+                                        self.bot.sendNotice(nickn,"denied permission node: "+argsx[2]+" from user: "+argsx[0])
+                                    else:
+                                        self.bot.sendNotice(nickn,"user "+argsx[0]+" already has denied permission node: "+argsx[2])
+                                elif argsx[1] == "revoke":
+                                    if argsx[2] in self.bot.data["userdata"][argsx[0]]["permissions"]:
+                                        self.bot.data["userdata"][argsx[0]]["permissions"].remove(argsx[2])
+                                        self.bot.sendNotice(nickn,"removed permission node: "+argsx[2]+" from user: "+argsx[0])
+                                    else:
+                                        self.bot.sendNotice(nickn,"user "+argsx[0]+" does not have permission node: "+argsx[2])
+                            if (argsx[1] == "reset" and len(argsx) == 2 and self.permCheck(hostn,resetPerm)):
+                                self.bot.sendNotice(nickn,"reset user "+argsx[0]+"'s permission nodes.")
                     except Exception as e:
                         self.bot.send("PRIVMSG "+channel+" :error "+str(e))
-            permission: 100
-            description: Sets permission
-            syntax: <user host> <permission level>
+            permission: owner.perm
+            description: change permissions
+            syntax: <userhost:str> grant/revoke/deny <permission_node:str>%<userhost:str> reset
             category: admin
         help:
             run: >
               try:
                 import time
                 if(args != ""):
-                    if(args.split()[0] in self.bot.data["variables"]["categories"]):
+                    categories = []
+                    for com in self.bot.data["commands"].keys():
+                        if "category" in self.bot.data["commands"][com]:
+                            if not (self.bot.data["commands"][com]["category"] in categories):
+                                categories.append(self.bot.data["commands"][com]["category"])
+                        else:
+                            if not "None" in categories:
+                                categories.append("None")
+                    if(args.split()[0] in categories):
                         com = []
                         for x in self.bot.data["commands"].keys():
                             if(args.split()[0] == self.bot.data["commands"][x]["category"]):
@@ -70,12 +100,21 @@ data:
                     elif( not args.split()[0] in self.bot.data["commands"]): 
                         self.bot.send("PRIVMSG "+channel+" :No such a command or category: '"+args.split()[0]+"'")
                 else:        
+                    categories = []
                     self.bot.send("PRIVMSG "+channel+" :Categories:")
-                    self.bot.send("PRIVMSG "+channel+" :"+" ".join(self.bot.data["variables"]["categories"]))
+                    for com in self.bot.data["commands"].keys():
+                        if "category" in self.bot.data["commands"][com]:
+                            if not (self.bot.data["commands"][com]["category"] in categories):
+                                categories.append(self.bot.data["commands"][com]["category"])
+                        else:
+                            if not "None" in categories:
+                                categories.append("None")
+                    self.bot.send("PRIVMSG "+channel+" :"+" ".join(categories))
               except Exception as e:
                 print(str(e))
+            permission: general.help
             description: Help command
-            syntax: '[category/command]'
+            syntax: "[category:str/command:str]"
             category: general
         eval:
             run: >
@@ -83,35 +122,77 @@ data:
                     self.bot.send("PRIVMSG "+channel+" :"+str(eval(args)))
                 except Exception as e:
                     self.bot.send("PRIVMSG "+channel+" :"+str(e))
-            permission: 100
+            permission: owner.eval
             description: Evaluate command
-            syntax: '<string to evaluate>'
-            category: admin
+            syntax: <string:str>
+            category: owner
         kill:
             run: >
                 try:
                     import sys
+                    self.bot.send("PRIVMSG "+channel+" :DED")
                     sys.exit()
                 except Exception as e:
                     print(e)
-            permission: 100
+            permission: "owner.kill"
             description: kill the bot
-            category: admin
+            category: owner
         kick:
             run: >
                 self.bot.send("KICK "+args.split()[0])
-            permission: 50
+            permission: admin.kick
             description: kick
             category: admin
-            
+        permTest:
+            run: >
+                self.bot.send("PRIVMSG "+channel+" :yes")
+            description: permission test
+            category: perm
+        join:
+            run: >
+                self.bot.send("JOIN "+args.split()[0])
+            permission: admin.join
+            description: Join channel, requires argument
+            category: admin
+        leave:
+            run: >
+                self.bot.send("PART "+args.split()[0])
+            permission: admin.leave
+            description: Leave channel, requires argument
+            category: admin
+        raw:
+            run: >
+                self.bot.send(args)
+            permission: owner.raw
+            syntax: <string:str>
+            description: raw IRC command
+            category: owner
+        about:
+            run: >
+                self.bot.sendPrivmsg(nickn,"to be written")
+            permission: general.about
+            description: info about the bot
+            category: general
+        whois:
+            run: >
+                self.bot.sendNotice(nickn,"NYI")
+            permission: general.whois
+            description: who is [user]
+            syntax: <hostname:str>
+            category: general
+    userdata:
+        unaffiliated/tceo:
+            permissions: !!seq
+                - "*"
+        unaffiliated/gustavo6046: 
+            permissions: !!seq
+                - "-owner.*"
+                - "*"
+        c.handicraftsman.tk: 
+            permissions: !!seq
+                - "-owner.*"
+                - "*"
     variables:
-        userdata:
-            unaffiliated/tceo:
-                permission: 100
-            unaffiliated/gustavo6046: 
-                permission: 90
-            c.handicraftsman.tk: 
-                permission: 90
-        categories: !!seq
-            - "admin"
+        default-permission-nodes:
             - "general"
+            - "perm.permTest"
