@@ -1,5 +1,5 @@
 secrets:
-    password: ""
+    password: "removed for git"
 
 variables:
     channels: !!seq

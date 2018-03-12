@@ -5,6 +5,7 @@ import parser
 import inspect
 import os
 import yaml
+import json
 import threading
 import positron
 from collections import defaultdict
@@ -34,7 +35,7 @@ class Bot:
             print(d)
             self.loadyaml(d)
             print(str(self.data))
-            
+
         self.config.secrets = {}        
 
         self.log = positron.Logger()
@@ -79,6 +80,9 @@ class Bot:
                             self.data = self.yaml.data
                         else:
                             self.data[c].update(self.yaml.data[c])
+                    if self.yaml.info["run"]:
+                        if ("onLoad") in self.yaml.info["run"]:
+                            exec(self.yaml.data[self.yaml.info["run"].replace("onLoad:")])
                     return 0
         except Exception as e:
             print(e)

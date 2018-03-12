@@ -3,6 +3,10 @@ info:
     load: !!seq
         - "commands"
         - "variables"
+    run: !!seq
+        - "onLoad:runOnLoad"
+        - "background:runOnBackground"
+        - "onMessage:runOnMessage"
 
 data:
     commands:
@@ -139,7 +143,7 @@ data:
             category: owner
         kick:
             run: >
-                self.bot.send("KICK "+args.split()[0])
+                self.bot.send("KICK "+channel+" "+args.split()[0])
             permission: admin.kick
             description: kick
             category: admin
@@ -199,6 +203,50 @@ data:
             permission: general.list
             description: use help command
             category: general
+        insult:
+            run: >
+                try:
+                    import markovify
+                    with open("./data/insult-list") as f:
+                        slist = f.read()
+                    SWEAR_MODEL = markovify.Text(slist, state_size=1)
+                    msg = SWEAR_MODEL.make_sentence()
+                    if args.split():
+                        msg = args.split()[0]+", " + msg
+                    if len(msg) > 400:
+                        stpart, ndpart = msg[:len(msg)//2], msg[len(msg)//2:] 
+                        self.bot.sendPrivmsg(channel,stpart)
+                        self.bot.sendPrivmsg(channel,ndpart)
+                    else:
+                        self.bot.sendPrivmsg(channel,msg)
+                except Exception as e:
+                    print(e)
+            permission: general.insult
+            description: insults you
+            syntax: "[string:str]"
+            category: general
+        addinsult:
+            run: >
+                if args:
+                    with open("./data/insult-list", "a") as ins:
+                        ins.write(args)
+            permission: admin.addinsult
+            description: add insult text to insults
+            syntax: "<string:str>"
+            category: admin
+        refreshinsults:
+            run: >
+                if args:
+                    with open("./data/insult-list", "a") as ins:
+                        ins.write(args)
+            permission: admin.addinsult
+            description: add insult text to insults
+            syntax: "<string:str>"
+            category: admin
+        shrug:
+            run: >
+                self.bot.sendPrivmsg(channel,"¯\_(ツ)_/¯")
+            category: general
     userdata:
         unaffiliated/tceo:
             permissions: !!seq
@@ -215,3 +263,10 @@ data:
         default-permission-nodes:
             - "general"
             - "perm.permTest"
+            
+    runOnLoad: >
+                variables    
+    runOnBackground: >
+                print("test")
+    runOnMessage: >
+                print("test")

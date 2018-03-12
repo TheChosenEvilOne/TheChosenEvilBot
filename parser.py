@@ -20,6 +20,9 @@ class Parser:
 class CommandHandler:
 	def __init__(self, bot):
 		self.bot = bot
+	def runOnMessage(self, user, channel, message):
+		nickn = user[user.find(":")+1:user.find("!")].strip()
+		
 	def handle(self, user, channel, args, command):
 		nickn = user[user.find(":")+1:user.find("!")].strip()
 		if(not command in self.bot.data["commands"]):
